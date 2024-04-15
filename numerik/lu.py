@@ -33,7 +33,7 @@ def lu_decomposition(a):
     return a
 
 
-def linsolve(A, b):
-    lu = lu_decomposition(A)
+def linsolve(a, b):
+    lu = lu_decomposition(a)
     x = fb_subs(lu, b)
     return x
