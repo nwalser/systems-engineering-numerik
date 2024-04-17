@@ -32,7 +32,7 @@ def lu_decomposition(a):
 
     return a
 
-
+# solves for Ax = b
 def linsolve(a, b):
     lu = lu_decomposition(a)
     x = fb_subs(lu, b)
