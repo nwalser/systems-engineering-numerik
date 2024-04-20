@@ -5,7 +5,8 @@ from typing import List
 
 # define model (create class to avoid long parameter passing lists)
 class Pipeline:
-    def __init__(self, pipe_length, pipe_area, height):
+    def __init__(self, pipe_length, pipe_area, height, name=""):
+        self.name = name
         self.pipe_length = pipe_length
         self.pipe_area = pipe_area
         self.height = height
@@ -22,7 +23,7 @@ class Pipeline:
 
 
 class MultiPipelineModel:
-    def __init__(self):
+    def __init__(self, name=""):
         self.p0: float = 1e6
         self.fluid_density: float = 1000
         self.gravity: float = 9.81
@@ -35,6 +36,7 @@ class MultiPipelineModel:
 
         self.min_power = 200_000
         self.max_power = 1_000_000
+        self.name = name
 
     def flow_rate_pump(self):
         return sum(pipeline.flow_rate for pipeline in self.pipelines)
@@ -89,14 +91,14 @@ class MultiPipelineModel:
 
 
 def get_default_single_pipeline_model():
-    model = MultiPipelineModel()
-    pipe1 = Pipeline(500, 0.05, 60)
+    model = MultiPipelineModel(name="Single Pipe Model")
+    pipe1 = Pipeline(500, 0.05, 60, name="Pipeline 1")
     model.pipelines.append(pipe1)
     return model
 
 
 def get_default_dual_pipeline_model():
-    model = MultiPipelineModel()
-    model.pipelines.append(Pipeline(500, 0.05, 60))
-    model.pipelines.append(Pipeline(2500, 0.03, 45))
+    model = MultiPipelineModel(name="Dual Pipe Model")
+    model.pipelines.append(Pipeline(500, 0.05, 60, name="Pipeline 1"))
+    model.pipelines.append(Pipeline(2500, 0.03, 45, name="Pipeline 2"))
     return model
