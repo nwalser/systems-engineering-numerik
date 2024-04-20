@@ -113,8 +113,8 @@ def get_default_tri_pipeline_model():
 
 def get_default_quad_pipeline_model():
     model = MultiPipelineModel(name="Quad Pipe Model")
-    model.pipelines.append(Pipeline(750, 0.05, 40, name="Pipeline 1"))
+    model.pipelines.append(Pipeline(12000, 0.05, 40, name="Pipeline 1"))
     model.pipelines.append(Pipeline(1200, 0.03, 45, name="Pipeline 2"))
     model.pipelines.append(Pipeline(7000, 0.02, 42, name="Pipeline 3"))
-    model.pipelines.append(Pipeline(2000, 0.06, 47, name="Pipeline 4"))
+    model.pipelines.append(Pipeline(500, 0.06, 45, name="Pipeline 4"))
     return model
