@@ -2,14 +2,62 @@ import numpy as np
 
 
 def explicit_euler(x_end, h, x0, y0, f):
-    xs = np.arange(x0, x_end, h, dtype = float)
+    xs = np.arange(x0, x_end + 1/2 * h, h, dtype=float)
     ys = np.zeros_like(xs, dtype=float)
     ys[0] = y0
 
     for i, x in enumerate(xs[:-1]):
         y = ys[i]
-        slope = f(x, y)
-        ys[i+1] = y + slope * h
+        r1 = f(x, y)
+        r = r1
+        ys[i+1] = y + r * h
+
+    return np.array(xs), np.array(ys)
+
+
+def explicit_runge(x_end, h, x0, y0, f):
+    xs = np.arange(x0, x_end + 1/2 * h, h, dtype=float)
+    ys = np.zeros_like(xs, dtype=float)
+    ys[0] = y0
+
+    for i, x in enumerate(xs[:-1]):
+        y = ys[i]
+        r1 = f(x, y)
+        r2 = f(x+1/2*h, y+1/2*r1*h)
+        r = 0*r1 + 1 * r2
+        ys[i+1] = y + r * h
+
+    return np.array(xs), np.array(ys)
+
+
+def explicit_runge_kutta(x_end, h, x0, y0, f):
+    xs = np.arange(x0, x_end + 1/2 * h, h, dtype=float)
+    ys = np.zeros_like(xs, dtype=float)
+    ys[0] = y0
+
+    for i, x in enumerate(xs[:-1]):
+        y = ys[i]
+        r1 = f(x, y)
+        r2 = f(x+1/2*h, y+1/2*r1*h)
+        r3 = f(x+1/2*h, y+1/2*r2*h)
+        r4 = f(x+1*h, y+1*r3*h)
+        r = 1/6*r1 + 2/6 * r2 + 2/6 * r3 + 1/6 * r4
+        ys[i+1] = y + r * h
+
+    return np.array(xs), np.array(ys)
+
+
+def explicit_heun(x_end, h, x0, y0, f):
+    xs = np.arange(x0, x_end + 1/2 * h, h, dtype=float)
+    ys = np.zeros_like(xs, dtype=float)
+    ys[0] = y0
+
+    for i, x in enumerate(xs[:-1]):
+        y = ys[i]
+        r1 = f(x, y)
+        r2 = f(x+1*h, y+1*r1*h)
+        r = 1/2*r1 + 1/2*r2
+        ys[i+1] = y + r * h
 
     return np.array(xs), np.array(ys)
 
