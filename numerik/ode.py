@@ -73,7 +73,6 @@ def implicit_euler(x_end, h, x0, y0, f, df):
         return 1 - h * df(xk, s)
 
     def newton(s, xk, yk, tol=1e-12, max_iter=20):
-        delta = 10*tol
         for k in range(max_iter):
             delta = G(s, xk, yk)/dG(s, xk, yk)
             s -= delta
@@ -84,4 +83,59 @@ def implicit_euler(x_end, h, x0, y0, f, df):
     while x[-1] < x_end-h/2:
         y.append(newton(y[-1], x[-1], y[-1]))
         x.append(x[-1]+h)
+
+    return np.array(x), np.array(y)
+
+
+def implicit_midpoint(x_end, h, x0, y0, f, df):
+    x = [x0]
+    y = [y0]
+
+    def G(yk1, xk, yk):
+        return yk1 - (yk + h * f(xk + h/2, (yk+yk1)/2))
+
+    def dG(yk1, xk, yk):
+        return 1 - h * df(xk + h/2, (yk+yk1)/2)
+
+    def newton(r, xk, yk, tol=1e-12, max_iter=20):
+        for k in range(max_iter):
+            delta = G(r, xk, yk)/dG(r, xk, yk)
+            r -= delta
+            if np.abs(delta) < tol:
+                break
+        return r
+
+    while x[-1] < x_end-h/2:
+        xk1 = x[-1]+h
+        yk1 = newton(0, x[-1], y[-1])
+        x.append(xk1)
+        y.append(yk1)
+
+    return np.array(x), np.array(y)
+
+
+def implicit_trapezoid(x_end, h, x0, y0, f, df):
+    x = [x0]
+    y = [y0]
+
+    def G(yk1, xk, yk):
+        return yk1 - (yk + h/2 * (f(xk, yk) + f(xk+h, yk1)))
+
+    def dG(yk1, xk, yk):
+        return 1 - h/2 * (df(xk, yk) + df(xk+h, yk1))
+
+    def newton(r, xk, yk, tol=1e-12, max_iter=20):
+        for k in range(max_iter):
+            delta = G(r, xk, yk)/dG(r, xk, yk)
+            r -= delta
+            if np.abs(delta) < tol:
+                break
+        return r
+
+    while x[-1] < x_end-h/2:
+        xk1 = x[-1]+h
+        yk1 = newton(0, x[-1], y[-1])
+        x.append(xk1)
+        y.append(yk1)
+
     return np.array(x), np.array(y)
