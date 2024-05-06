@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.linalg import solve_triangular, lu
 
 
 def explicit_euler(x_end, h, x0, y0, f):
@@ -32,7 +33,7 @@ def explicit_runge(x_end, h, x0, y0, f):
 
 def explicit_runge_kutta(x_end, h, x0, y0, f):
     xs = np.arange(x0, x_end + 1/2 * h, h, dtype=float)
-    ys = np.zeros_like(xs, dtype=float)
+    ys = np.zeros((len(xs), len(y0)), dtype=float)
     ys[0] = y0
 
     for i, x in enumerate(xs[:-1]):
@@ -108,6 +109,39 @@ def implicit_midpoint(x_end, h, x0, y0, f, df):
     while x[-1] < x_end-h/2:
         xk1 = x[-1]+h
         yk1 = newton(0, x[-1], y[-1])
+        x.append(xk1)
+        y.append(yk1)
+
+    return np.array(x), np.array(y)
+
+
+def implicit_midpoint_for_system(x_end, h, x0, y0, f, df):
+    x = [x0]
+    y = [y0]
+
+    def G(r, xk, yk):
+        return r - f(xk + h*0.5, yk+h*r*0.5)
+
+    def dG(r, xk, yk):
+        return np.eye(y0.shape[0]) - h * df(xk + 0.5, yk+h*r*0.5)*0.5
+
+    def newton(r, xk, yk, tol=1e-12, max_iter=20):
+        for k in range(max_iter):
+            b = G(r, xk, yk)
+            A = dG(r, xk+0.5*h, yk)
+            p, l, u = lu(A)
+            z = solve_triangular(l, p.T@b, lower=False)
+            delta = solve_triangular(u, z, lower=False)
+            r -= delta
+            if np.linalg.norm(delta) < tol:
+                break
+        return r
+
+    s = f(x[-1], y[-1])
+    while x[-1] < x_end-h/2:
+        r = h*newton(s, x[-1], y[-1])
+        xk1 = x[-1]+h
+        yk1 = y[-1]+r*h*4
         x.append(xk1)
         y.append(yk1)
 
